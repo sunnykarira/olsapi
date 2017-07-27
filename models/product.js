@@ -1,7 +1,7 @@
 'use strict'
 
 const mongoose = require('mongoose');
-var validate = require('mongoose-validator');
+const validate = require('mongoose-validator');
 
 var nameValidator = [
     validate({
@@ -60,6 +60,8 @@ var productSchema = mongoose.Schema({
     }
 });
 
+productSchema.index({ name: 1, category: 1 }); 
+
 var Product = module.exports = mongoose.model('Product', productSchema);
 
 module.exports.addProduct = function(product, callback){
@@ -93,6 +95,57 @@ module.exports.addProduct = function(product, callback){
     });
     
 }
+
+
+module.exports.deleteById = function(id, callback){
+    
+    let query = {_id: id};
+    Product.remove(query, function(err){
+        if(err){
+            callback(err);
+        }else{
+            callback(false);
+        }
+    });
+}
+
+module.exports.deleteByName = function(name, callback){
+    
+    let query = {name: name};
+    Product.remove(query, function(err){
+        if(err){
+            callback(err);
+        }else{
+            callback(false);
+        }
+    });
+}
+
+module.exports.deleteByCategory = function(category, callback){
+    
+    let query = {category: category};
+    Product.remove(query, function(err){
+        if(err){
+            callback(err);
+        }else{
+            callback(false);
+        }
+    });
+}
+
+
+module.exports.getAllProducts= function(callback){
+
+    Product.find({}, {}, function(err, data){
+        if(err){
+            //console.log(err);
+            callback(err.toString(), '');
+        }else{
+            callback(false, JSON.stringify(data, null, ' '));
+        }
+    })
+}
+
 
 
 

@@ -3,7 +3,7 @@
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 const jwt  = require('jsonwebtoken');
-var validate = require('mongoose-validator');
+const validate = require('mongoose-validator');
 
 
 

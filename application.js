@@ -284,7 +284,16 @@ try{
                 let token = req.headers.token || parsedUrl.query.token;
                 let midRes = tokenMiddleware(token);
                 if(midRes){
-                    console.log(parsedUrl.query);
+                    
+                    Product.getAllProducts(function(err, data){
+                        if(err){
+                            res.writeHead(400, {'Content-type': mimeTypes.text});
+                            res.end(err);                            
+                        }else{
+                            res.writeHead(200, {'Content-type': mimeTypes.text});
+                            res.end((data));
+                        }
+                    });
 
 
                 }else{
@@ -345,7 +354,47 @@ try{
                 let token = req.headers.token || parsedUrl.query.token;
                 let midRes = tokenMiddleware(token);
                 if(midRes){
-                    console.log(parsedUrl.query.id);
+                    
+                    if(parsedUrl.query.id){
+
+                        Product.deleteById(parsedUrl.query.id, function(err){
+                            if(err){
+                                res.writeHead(400, {'Content-type': mimeTypes.text});
+                                res.end(err);                                
+                            }else{
+                                res.writeHead(200, {'Content-type': mimeTypes.text});
+                                res.end('Product Deleted.');                                 
+                            }
+                        });
+
+                    }else if(parsedUrl.query.name){
+
+                        Product.deleteByName(parsedUrl.query.name, function(err){
+                            if(err){
+                                res.writeHead(400, {'Content-type': mimeTypes.text});
+                                res.end(err);                                
+                            }else{
+                                res.writeHead(200, {'Content-type': mimeTypes.text});
+                                res.end('Product Deleted.');                                 
+                            }
+                        });
+
+                    }else if(parsedUrl.query.category){
+
+                        Product.deleteByCategory(parsedUrl.query.category, function(err){
+                            if(err){
+                                res.writeHead(400, {'Content-type': mimeTypes.text});
+                                res.end(err);                                
+                            }else{
+                                res.writeHead(200, {'Content-type': mimeTypes.text});
+                                res.end('Products Deleted.');                                 
+                            }
+                        });
+                        
+                    }else{
+                        res.writeHead(400, {'Content-type': mimeTypes.text});
+                        res.end('Bad Request');
+                    }
 
 
                 }else{
