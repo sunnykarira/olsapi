@@ -195,7 +195,7 @@ try{
 
                 }else{
                     // Invalid Password
-                    res.writeHead(200, {'Content-type': mimeTypes.html});
+                    res.writeHead(400, {'Content-type': mimeTypes.html});
                     res.end('Invalid Password.');
                 }
 
@@ -237,7 +237,7 @@ try{
 
                     });
                 }else{
-                    res.writeHead(200, {'Content-type': mimeTypes.text});
+                    res.writeHead(400, {'Content-type': mimeTypes.text});
                     res.end("Invalid Password.");                    
                 }
 
@@ -272,7 +272,7 @@ try{
 
                     });
                 }else{
-                    res.writeHead(200, {'Content-type': mimeTypes.text});
+                    res.writeHead(400, {'Content-type': mimeTypes.text});
                     res.end('Invalid data entered. Field Missing.');
                 }
 
@@ -337,12 +337,12 @@ try{
                         });
 
                     }else{
-                        res.writeHead(200, {'Content-type': mimeTypes.text});
+                        res.writeHead(400, {'Content-type': mimeTypes.text});
                         res.end('Please provide correct token in header.');                    
                     }                   
 
                 }else{
-                    res.writeHead(200, {'Content-type': mimeTypes.text});
+                    res.writeHead(400, {'Content-type': mimeTypes.text});
                     res.end('Please login to access this route.');                      
                 }
 
@@ -415,22 +415,37 @@ try{
                                 }
                             });                            
                         }else{
-                            res.writeHead(400, {'Content-type': mimeTypes.text});
+                            res.writeHead(500, {'Content-type': mimeTypes.text});
                             res.end('Bad Request.');
                         }
 
 
                 }else{
-                    res.writeHead(200, {'Content-type': mimeTypes.text});
+                    res.writeHead(400, {'Content-type': mimeTypes.text});
                     res.end('Please provide correct token in header.');
                 }
                 
             }else{
-                    res.writeHead(200, {'Content-type': mimeTypes.text});
+                    res.writeHead(400, {'Content-type': mimeTypes.text});
                     res.end('Login to access this route.');                
             }            
 
                 
+        }else if( req.method == 'PUT' && pathname == '/api/product' ){
+
+
+        }else{
+
+
+            fs.readFile(assets.html + 'error.html', function(err, data){
+                if(err){
+                    res.writeHead(500, {'Content-type': mimeTypes.html});
+                    res.end(err);
+                };
+                res.writeHead(400, {'Content-type': mimeTypes.html});
+                res.end(data);
+            });
+
         }
 
 
