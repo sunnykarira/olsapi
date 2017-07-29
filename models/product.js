@@ -119,7 +119,7 @@ module.exports.deleteItem = function(query, callback){
 
 
 
-module.exports.getAllProducts = function(callback){
+module.exports.getAllProducts = function(limit, callback){
 
     Product.find({}, {}, function(err, data){
         if(err){
@@ -128,9 +128,37 @@ module.exports.getAllProducts = function(callback){
         }else{
             callback(false, JSON.stringify(data, null, ' '));
         }
-    })
+    }).limit(limit);
 }
 
 
+module.exports.updateById = function(id, parsedUrl, callback){
+    
+    let query = {_id: id};
+    Product.findById(query, {}, function(err, product){
+        if(err){
+            callback(err);
+        }else if(product != undefined){
 
+            let upadateObj = {
+                name: parsedUrl.query.name === undefined? product.name : parsedUrl.query.name,
+                price: parsedUrl.query.price === undefined? product.price : parsedUrl.query.price,
+                saleprice: parsedUrl.query.saleprice === undefined? (product.saleprice === undefined ? undefined : product.saleprice) : parsedUrl.query.saleprice,
+                description: parsedUrl.query.description === undefined? product.description : parsedUrl.query.description,
+                category: parsedUrl.query.category === undefined? product.category : parsedUrl.query.category,
+                details: parsedUrl.query.deatils === undefined? product.details : parsedUrl.query.deatils
+            }
 
+            Product.update(query, {$set:upadateObj}, function(err){
+                if(err){
+                    callback(err);
+                }else{
+                    callback(false);
+                }
+            });
+            
+        }else{
+            callback('Product not found in database.');
+        }
+    });
+};

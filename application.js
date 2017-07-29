@@ -16,8 +16,8 @@ const jwt = require('jsonwebtoken');
 const PORT = process.env.PORT || 10450;
 
 //Require User model
-var User = require('./models/user.js');
-var Product = require('./models/product.js');
+const User = require('./models/user.js');
+const Product = require('./models/product.js');
 
 //Require Configuration
 const config = require('./config.js');
@@ -49,23 +49,7 @@ const assets = {
     "css": "./assets/css/"
 }
 
-
-
-//Function to check if Password is valid or not and matches with confirm password
-function checkPassword(password, confirmpassword){
-
-    //Check for password of 8 or more characters having >1 special characters and >1 uppercase letter
-    let re = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/;
-    if(password === confirmpassword && password !== '' && password !== undefined){
-            if(re.test(password)){
-                return true;
-            }else{
-                return false;
-            }           
-    }
-
-}
-
+// Function to check password field. Overloaded for mongoose-validator.
 function checkPassword(password){
 
     //Check for password of 8 or more characters having >1 special characters and >1 uppercase letter
@@ -79,19 +63,7 @@ function checkPassword(password){
     }
 }
 
-function authMiddleware(username, password, confirmpassword){
-    
-    if(username == undefined || password == undefined || confirmpassword == undefined){
-        return false;
-    }
-
-    if(checkPassword(password, confirmpassword)){
-        return true;
-    }else{
-        return false;
-    }
-}
-
+//Authentication middleware to check password
 function authMiddleware(username, password){
     if(username == undefined || password == undefined){
         return false;
@@ -104,7 +76,7 @@ function authMiddleware(username, password){
     }
 }
 
-
+//Function to generate JWT token for the api.
 function generateToken(req, user){
 
     // By default, expire the token after 7 days.
@@ -121,6 +93,7 @@ function generateToken(req, user){
     return token;
 }
 
+//Function to verify JWT token for the api.
 function tokenMiddleware(token){
 
     let decoded;
@@ -142,7 +115,9 @@ function tokenMiddleware(token){
 var localUser = undefined;
 
 
-
+/////////////////////////////////////////////////////////////////////////
+//////////                  Route Code               ///////////////////
+////////////////////////////////////////////////////////////////////////
 try{
     //Create http server listening on defined port.
     http.createServer(function(req, res){
@@ -150,8 +125,10 @@ try{
         let parsedUrl = url.parse(req.url, true);
         let pathname = parsedUrl.pathname;
 
+        // GET /
         if(req.method == 'GET' && pathname == '/'){
 
+            //Read HTML file
             fs.readFile(assets.html + 'index.html', function(err, data){
                 if(err){
                     res.writeHead(500, {'Content-type': mimeTypes.html});
@@ -161,7 +138,8 @@ try{
                 res.end(data + PORT+ '</p>');
             });
 
-        }else if(req.method == 'POST' && pathname == '/api/signup'){
+        }//POST /api/signup
+        else if(req.method == 'POST' && pathname == '/api/signup'){
 
             var getFullData = '';
 
@@ -202,7 +180,8 @@ try{
 
             });
 
-        }else if(req.method == 'POST' && pathname == '/api/authenticate'){
+        }//POST /api/authenticate
+        else if(req.method == 'POST' && pathname == '/api/authenticate'){
 
             var getFullData = '';
 
@@ -211,7 +190,7 @@ try{
             }).on('end', function(){
 
                 getFullData = JSON.parse(getFullData);
-
+                
                 let passwordCheck = checkPassword(getFullData.password);
                 
                 if(passwordCheck){
@@ -244,7 +223,8 @@ try{
             });
 
 
-        }else if(req.method == 'POST' && pathname == '/api/login'){
+        }//POST /api/login
+        else if(req.method == 'POST' && pathname == '/api/login'){
             var getFullData = '';
 
             req.on('data', function(chunk){
@@ -278,22 +258,24 @@ try{
 
             });
 
-        }else if(req.method == 'GET' && pathname == '/api/product'){
+        }//GET /api/product
+        else if(req.method == 'GET' && pathname == '/api/product'){
             
             if(localUser != undefined){
                 let token = req.headers.token || parsedUrl.query.token;
                 let midRes = tokenMiddleware(token);
                 if(midRes){
                     
-                    Product.getAllProducts(function(err, data){
-                        if(err){
-                            res.writeHead(400, {'Content-type': mimeTypes.text});
-                            res.end(err);                            
-                        }else{
-                            res.writeHead(200, {'Content-type': mimeTypes.text});
-                            res.end((data));
-                        }
-                    });
+                        Product.getAllProducts(parseInt(parsedUrl.query.limit) || 0, function(err, data){
+                            if(err){
+                                res.writeHead(400, {'Content-type': mimeTypes.text});
+                                res.end(err);                            
+                            }else{
+                                res.writeHead(200, {'Content-type': mimeTypes.text});
+                                res.end((data));
+                            }
+                        });
+
 
 
                 }else{
@@ -306,7 +288,8 @@ try{
             }
 
 
-        }else if(req.method == 'POST' && pathname == '/api/product'){
+        }//POST /api/product
+        else if(req.method == 'POST' && pathname == '/api/product'){
 
             var getFullData = '';
             req.on('data', function(chunk){
@@ -348,7 +331,9 @@ try{
 
                 
             });
-        }else if(req.method == 'DELETE' && pathname == '/api/product'){
+
+        }//DELETE /api/product
+        else if(req.method == 'DELETE' && pathname == '/api/product'){
 
             if(localUser != undefined){
                 let token = req.headers.token || parsedUrl.query.token;
@@ -431,10 +416,55 @@ try{
             }            
 
                 
-        }else if( req.method == 'PUT' && pathname == '/api/product' ){
+        }//PUT /api/product
+        else if( req.method == 'PUT' && pathname == '/api/product' ){
+
+            var getFullData = '';
+            req.on('data', function(chunk){
+                getFullData += chunk;
+            }).on('end', function(){
+
+                if(localUser != undefined){
+
+                    getFullData = JSON.parse(getFullData);
+                    let token = req.headers.token || parsedUrl.query.token;
+                    let midRes = tokenMiddleware(token);
+                    if(midRes){
+
+                        let id = parsedUrl.query.id || undefined;
+                        if(id != undefined){
+                            
+                            Product.updateById(id, parsedUrl, function(err){
+                                if(err){
+                                    res.writeHead(400, {'Content-type': mimeTypes.text});
+                                    res.end(err.toString());                                    
+                                }else{
+                                    res.writeHead(200, {'Content-type': mimeTypes.text});
+                                    res.end('Product Updated.');
+                                }
+                            });
+
+                        }else{
+                            res.writeHead(400, {'Content-type': mimeTypes.text});
+                            res.end('Please provide document ID to update it.');                             
+                        }
 
 
-        }else{
+                    }else{
+                        res.writeHead(400, {'Content-type': mimeTypes.text});
+                        res.end('Please provide correct token in header.');                    
+                    }                   
+
+                }else{
+                    res.writeHead(400, {'Content-type': mimeTypes.text});
+                    res.end('Please login to access this route.');                      
+                }
+
+                
+            });            
+
+        }// All other routes
+        else{
 
 
             fs.readFile(assets.html + 'error.html', function(err, data){
