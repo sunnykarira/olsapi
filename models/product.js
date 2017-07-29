@@ -96,45 +96,30 @@ module.exports.addProduct = function(product, callback){
     
 }
 
+module.exports.deleteItem = function(query, callback){
 
-module.exports.deleteById = function(id, callback){
-    
-    let query = {_id: id};
-    Product.remove(query, function(err){
+    Product.find(query, {}, function(err, data){
         if(err){
-            callback(err);
-        }else{
-            callback(false);
-        }
-    });
-}
+            callback(err.toString());
+        }else if(data != undefined){
 
-module.exports.deleteByName = function(name, callback){
-    
-    let query = {name: name};
-    Product.remove(query, function(err){
-        if(err){
-            callback(err);
-        }else{
-            callback(false);
-        }
-    });
-}
+            Product.remove(query, function(err){
+                if(err){
+                    callback(err.toString());
+                }else{
+                    callback(false);
+                }
+            });
 
-module.exports.deleteByCategory = function(category, callback){
-    
-    let query = {category: category};
-    Product.remove(query, function(err){
-        if(err){
-            callback(err);
         }else{
-            callback(false);
+            callback('Product not found in database.')
         }
     });
 }
 
 
-module.exports.getAllProducts= function(callback){
+
+module.exports.getAllProducts = function(callback){
 
     Product.find({}, {}, function(err, data){
         if(err){
