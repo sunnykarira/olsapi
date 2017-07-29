@@ -38,6 +38,10 @@ var productSchema = mongoose.Schema({
         lowercase: true,
         validator: categoryValidator
     },
+    quantity: {
+        type: Number,
+        required: true
+    },
     price:{
         type: Number,
         required: true,
@@ -80,17 +84,18 @@ module.exports.addProduct = function(product, callback){
                     errString += err.errors.saleprice === undefined? '': err.errors.saleprice.message + '\n';
                     errString += err.errors.details === undefined? '': err.errors.details.message + '\n';
                     errString += err.errors.description === undefined? '': err.errors.description.message + '\n';
+                    errString += err.errors.quantity === undefined? '': err.errors.quantity.message + '\n';
                     callback(err.toString());
 
 
                 }else{
                     callback(false);
-                    console.log('Product Added to Database');
+                    console.log('Product Added to Database.');
                 }
             });
             
         }else{
-            callback('Product Already Exist');
+            callback('Product Already Exist.');
         }
     });
     
@@ -101,8 +106,8 @@ module.exports.deleteItem = function(query, callback){
     Product.find(query, {}, function(err, data){
         if(err){
             callback(err.toString());
-        }else if(data != undefined){
 
+        }else if(data.length != 0){
             Product.remove(query, function(err){
                 if(err){
                     callback(err.toString());
@@ -112,23 +117,40 @@ module.exports.deleteItem = function(query, callback){
             });
 
         }else{
-            callback('Product not found in database.')
+            callback('Products not found in database.');
         }
     });
 }
 
 
 
-module.exports.getAllProducts = function(limit, callback){
+module.exports.getAllProducts = function(parsedUrl, callback){
 
-    Product.find({}, {}, function(err, data){
-        if(err){
-            //console.log(err);
-            callback(err.toString(), '');
-        }else{
-            callback(false, JSON.stringify(data, null, ' '));
-        }
-    }).limit(limit);
+    let limit = parseInt(parsedUrl.query.limit || 0);
+    if(limit != undefined && parsedUrl.query.category != undefined){
+        Product.find({category: parsedUrl.query.category}, {}, function(err, data){
+
+            if(err){
+                //console.log(err);
+                callback(err.toString(), '');
+            }else{
+                callback(false, JSON.stringify(data, null, ' '));
+            }
+        }).limit(limit);
+    }else if(limit != undefined){
+
+        Product.find({}, {}, function(err, data){
+
+            if(err){
+                //console.log(err);
+                callback(err.toString(), '');
+            }else{
+                callback(false, JSON.stringify(data, null, ' '));
+            }
+        }).limit(limit);        
+    }
+
+
 }
 
 
@@ -138,7 +160,7 @@ module.exports.updateById = function(id, parsedUrl, callback){
     Product.findById(query, {}, function(err, product){
         if(err){
             callback(err);
-        }else if(product != undefined){
+        }else if(product.length != 0){
 
             let upadateObj = {
                 name: parsedUrl.query.name === undefined? product.name : parsedUrl.query.name,
@@ -146,7 +168,8 @@ module.exports.updateById = function(id, parsedUrl, callback){
                 saleprice: parsedUrl.query.saleprice === undefined? (product.saleprice === undefined ? undefined : product.saleprice) : parsedUrl.query.saleprice,
                 description: parsedUrl.query.description === undefined? product.description : parsedUrl.query.description,
                 category: parsedUrl.query.category === undefined? product.category : parsedUrl.query.category,
-                details: parsedUrl.query.deatils === undefined? product.details : parsedUrl.query.deatils
+                details: parsedUrl.query.deatils === undefined? product.details : parsedUrl.query.deatils,
+                quantity: parsedUrl.query.quantity === undefined? product.quantity : parsedUrl.query.quantity
             }
 
             Product.update(query, {$set:upadateObj}, function(err){

@@ -50,6 +50,23 @@ const assets = {
 }
 
 // Function to check password field. Overloaded for mongoose-validator.
+function checkPasswordpcp(password, confirmpassword){
+
+    if(password === confirmpassword){
+        //Check for password of 8 or more characters having >1 special characters and >1 uppercase letter
+        let re = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/;
+        if(password != '' && password != undefined){
+                if(re.test(password)){
+                    return true;
+                }else{
+                    return false;
+                }           
+        }
+    }
+
+}
+
+// Function to check password field. Overloaded for mongoose-validator.
 function checkPassword(password){
 
     //Check for password of 8 or more characters having >1 special characters and >1 uppercase letter
@@ -151,7 +168,7 @@ try{
                 getFullData = JSON.parse(getFullData);
 
                 //Auth strategy to check if username, password exists and are valid or not
-                let passwordCheck = checkPassword(getFullData.password, getFullData.confirmpassword);
+                let passwordCheck = checkPasswordpcp(getFullData.password, getFullData.confirmpassword);
 
                 //If auth is valid
                 if(passwordCheck){
@@ -163,18 +180,21 @@ try{
 
                     //Add user functionality
                     User.addUser(newUser, function(err){
-                        res.writeHead(200, {'Content-type': mimeTypes.html});
+                        
                         if(err){
+                            res.writeHead(200, {'Content-type': mimeTypes.text});
                             res.end(err);
+                            
                         }else{
+                            res.writeHead(201, {'Content-type': mimeTypes.text});
                             res.end('User Added. Please visit /api/authenticate to get the web token.');
                         }
                     });
 
                 }else{
                     // Invalid Password
-                    res.writeHead(400, {'Content-type': mimeTypes.html});
-                    res.end('Invalid Password.');
+                    res.writeHead(400, {'Content-type': mimeTypes.text});
+                    res.end('Invalid Password. Field Missing');
                 }
 
 
@@ -208,7 +228,7 @@ try{
                                 if(err) throw err;
 
                                 res.writeHead(200, {'Content-type': mimeTypes.html});
-                                res.end("Your API token is "  + token);
+                                res.end(token);
 
                             });
                             
@@ -217,7 +237,7 @@ try{
                     });
                 }else{
                     res.writeHead(400, {'Content-type': mimeTypes.text});
-                    res.end("Invalid Password.");                    
+                    res.end("Invalid Password. Field Missing");                    
                 }
 
             });
@@ -266,7 +286,7 @@ try{
                 let midRes = tokenMiddleware(token);
                 if(midRes){
                     
-                        Product.getAllProducts(parseInt(parsedUrl.query.limit) || 0, function(err, data){
+                        Product.getAllProducts(parsedUrl, function(err, data){
                             if(err){
                                 res.writeHead(400, {'Content-type': mimeTypes.text});
                                 res.end(err);                            
@@ -283,7 +303,7 @@ try{
                     res.end('Please provide correct token in header.');
                 }                
             }else{
-                    res.writeHead(200, {'Content-type': mimeTypes.text});
+                    res.writeHead(401, {'Content-type': mimeTypes.text});
                     res.end('Login to access this route.');                
             }
 
@@ -309,23 +329,23 @@ try{
         
                         Product.addProduct(product, function(err){
                             if(err){
-                                res.writeHead(200, {'Content-type': mimeTypes.text});
+                                res.writeHead(400, {'Content-type': mimeTypes.text});
                                 //console.log(err);
                                 res.end(err);                              
                             }else{
-                                res.writeHead(200, {'Content-type': mimeTypes.text});
+                                res.writeHead(201, {'Content-type': mimeTypes.text});
                                 res.end('Product Added to database');
                             }
                                 
                         });
 
                     }else{
-                        res.writeHead(400, {'Content-type': mimeTypes.text});
+                        res.writeHead(200, {'Content-type': mimeTypes.text});
                         res.end('Please provide correct token in header.');                    
                     }                   
 
                 }else{
-                    res.writeHead(400, {'Content-type': mimeTypes.text});
+                    res.writeHead(401, {'Content-type': mimeTypes.text});
                     res.end('Please login to access this route.');                      
                 }
 
@@ -411,7 +431,7 @@ try{
                 }
                 
             }else{
-                    res.writeHead(400, {'Content-type': mimeTypes.text});
+                    res.writeHead(401, {'Content-type': mimeTypes.text});
                     res.end('Login to access this route.');                
             }            
 
@@ -426,7 +446,6 @@ try{
 
                 if(localUser != undefined){
 
-                    getFullData = JSON.parse(getFullData);
                     let token = req.headers.token || parsedUrl.query.token;
                     let midRes = tokenMiddleware(token);
                     if(midRes){
@@ -439,7 +458,7 @@ try{
                                     res.writeHead(400, {'Content-type': mimeTypes.text});
                                     res.end(err.toString());                                    
                                 }else{
-                                    res.writeHead(200, {'Content-type': mimeTypes.text});
+                                    res.writeHead(201, {'Content-type': mimeTypes.text});
                                     res.end('Product Updated.');
                                 }
                             });
@@ -456,14 +475,39 @@ try{
                     }                   
 
                 }else{
-                    res.writeHead(400, {'Content-type': mimeTypes.text});
+                    res.writeHead(401, {'Content-type': mimeTypes.text});
                     res.end('Please login to access this route.');                      
                 }
 
                 
             });            
 
-        }// All other routes
+        }else if(req.method == 'POST' && pathname == '/api/logout'){
+
+                if(localUser != undefined){
+
+                    let token = req.headers.token || parsedUrl.query.token;
+                    let midRes = tokenMiddleware(token);
+                    if(midRes){
+
+                        localUser = undefined;
+                        res.writeHead(200, {'Content-type': mimeTypes.text});
+                        res.end('Successfully Logged out.')
+
+
+                    }else{
+                        res.writeHead(400, {'Content-type': mimeTypes.text});
+                        res.end('Please provide correct token in header.');                    
+                    }                   
+
+                }else{
+                    res.writeHead(401, {'Content-type': mimeTypes.text});
+                    res.end('Please login to access this route.');                      
+                }
+
+                         
+        }
+        // All other routes
         else{
 
 
@@ -472,7 +516,7 @@ try{
                     res.writeHead(500, {'Content-type': mimeTypes.html});
                     res.end(err);
                 };
-                res.writeHead(400, {'Content-type': mimeTypes.html});
+                res.writeHead(200, {'Content-type': mimeTypes.html});
                 res.end(data);
             });
 
