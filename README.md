@@ -58,8 +58,8 @@ $ python herokutests.py
 | `/logout` |   |   |   | GET | Logout user | Succesfully logged out. |
 
 
-here is [link to postman local][] for more details
-here is [link to postman heroku][] for more details
+> here is [link to postman local][] for more details.
+> here is [link to postman heroku][] for more details.
 
 
 
