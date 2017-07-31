@@ -152,7 +152,7 @@ try{
                     res.end(err);
                 };
                 res.writeHead(200, {'Content-type': mimeTypes.html});
-                res.end(data + PORT+ '</p>');
+                res.end(data);
             });
 
         }//POST /api/signup

@@ -1,2 +1,95 @@
 
-<p>Made By Sunny Karira. Welcome to the WING_OLS_API: Running at PORT 
+<p>Made By Sunny Karira. Welcome to the WING_OLS_API: Version 1.0</p>
+<h1>Local</h1>
+
+<h2>POST Signup</h2>
+<p>http://localhost:10450/signup</p>
+<p>BODY -- JSON DATA username, password, confirmpassword</p><br>
+
+<h2>POST Authenticate</h2>
+<p>http://localhost:10450/authentictae</p>
+<p>BODY -- JSON DATA username, password</p><br>
+
+<h2>POST Login</h2>
+<p>http://localhost:10450/login</p>
+<p>BODY -- JSON DATA username, password</p>
+<p>HEADERS --- token</p><br>
+
+<h2>GET Product</h2>
+<p>http://localhost:10450/api/product?limit=2&category=camera</p>
+<p>PARAMS -- limit, category </p>
+<p>HEADERS --- token</p><br>
+
+<h2>POST Product</h2>
+<p>http://localhost:10450/api/product</p>
+<p>BODY -- JSON DATA refer document </p>
+<p>HEADERS --- token</p><br>
+
+<h2>PUT Product</h2>
+<p>http://localhost:10450/api/product?id=[string]</p>
+<p>PARAMS -- id</p>
+<p>HEADERS --- token</p><br>
+
+<h2>DELETE Product</h2>
+<p>http://localhost:10450/api/product?id=[string]</p>
+<p>OR</p>
+<p>http://localhost:10450/api/product?name=[string]&category[string]</p>
+<p>OR</p>
+<p>http://localhost:10450/api/product?name=[string]</p>
+<p>OR</p>
+<p>http://localhost:10450/api/product?category[string]</p>
+<p>PARAMS -- id, name, category</p>
+<p>HEADERS --- token</p><br>
+
+
+<h2>GET Product</h2>
+<p>http://localhost:10450/logout</p>
+<p>HEADERS --- token</p><br>
+
+
+<h1>Heroku</h1>
+
+
+<h2>POST Signup</h2>
+<p>https://ols80.herokuapp.com/signup</p>
+<p>BODY -- JSON DATA username, password, confirmpassword</p><br>
+
+<h2>POST Authenticate</h2>
+<p>https://ols80.herokuapp.com/authentictae</p>
+<p>BODY -- JSON DATA username, password</p><br>
+
+<h2>POST Login</h2>
+<p>https://ols80.herokuapp.com/login</p>
+<p>BODY -- JSON DATA username, password</p>
+<p>HEADERS --- token</p><br>
+
+<h2>GET Product</h2>
+<p>https://ols80.herokuapp.com/api/product?limit=2&category=camera</p>
+<p>PARAMS -- limit, category </p>
+<p>HEADERS --- token</p><br>
+
+<h2>POST Product</h2>
+<p>https://ols80.herokuapp.com/api/product</p>
+<p>BODY -- JSON DATA refer document </p>
+<p>HEADERS --- token</p><br>
+
+<h2>PUT Product</h2>
+<p>https://ols80.herokuapp.com/api/product?id=[string]</p>
+<p>PARAMS -- id</p>
+<p>HEADERS --- token</p><br>
+
+<h2>DELETE Product</h2>
+<p>https://ols80.herokuapp.com/api/product?id=[string]</p>
+<p>OR</p>
+<p>https://ols80.herokuapp.com/api/product?name=[string]&category[string]</p>
+<p>OR</p>
+<p>https://ols80.herokuapp.com/api/product?name=[string]</p>
+<p>OR</p>
+<p>https://ols80.herokuapp.com/api/product?category[string]</p>
+<p>PARAMS -- id, name, category</p>
+<p>HEADERS --- token</p><br>
+
+
+<h2>GET Product</h2>
+<p>https://ols80.herokuapp.com/logout</p>
+<p>HEADERS --- token</p><br>
