@@ -148,7 +148,7 @@ try{
             //Read HTML file
             fs.readFile(assets.html + 'index.html', function(err, data){
                 if(err){
-                    res.writeHead(500, {'Content-type': mimeTypes.html});
+                    res.writeHead(400, {'Content-type': mimeTypes.html});
                     res.end(err);
                 };
                 res.writeHead(200, {'Content-type': mimeTypes.html});
@@ -182,7 +182,7 @@ try{
                     User.addUser(newUser, function(err){
                         
                         if(err){
-                            res.writeHead(200, {'Content-type': mimeTypes.text});
+                            res.writeHead(400, {'Content-type': mimeTypes.text});
                             res.end(err);
                             
                         }else{
@@ -193,8 +193,8 @@ try{
 
                 }else{
                     // Invalid Password
-                    res.writeHead(400, {'Content-type': mimeTypes.text});
-                    res.end('Invalid Password. Field Missing');
+                    res.writeHead(403, {'Content-type': mimeTypes.text});
+                    res.end('Password field Missing or does not satisfy criteria.');
                 }
 
 
@@ -218,17 +218,22 @@ try{
                     User.getUser(getFullData, function(err, user){
 
                         if(user === undefined){
-                            res.writeHead(200, {'Content-type': mimeTypes.html});
+                            res.writeHead(201, {'Content-type': mimeTypes.html});
                             res.end('User or Password Incorrect.');
                         }else{
 
                             let token = generateToken(req, user);
                             User.updateToken(user, token, function(err, response){
                                 console.log(response);
-                                if(err) throw err;
+                                if(err){
+                                    res.writeHead(400, {'Content-type': mimeTypes.text});
+                                    res.end(err);
+                                    
+                                }else{
+                                    res.writeHead(200, {'Content-type': mimeTypes.html});
+                                    res.end(token);
+                                }
 
-                                res.writeHead(200, {'Content-type': mimeTypes.html});
-                                res.end(token);
 
                             });
                             
@@ -236,8 +241,8 @@ try{
 
                     });
                 }else{
-                    res.writeHead(400, {'Content-type': mimeTypes.text});
-                    res.end("Invalid Password. Field Missing");                    
+                    res.writeHead(403, {'Content-type': mimeTypes.text});
+                    res.end("Password field Missing or does not satisfy criteria.");                    
                 }
 
             });
@@ -258,7 +263,7 @@ try{
                     User.getUser(getFullData, function(err, user){
 
                         if(user === undefined){
-                            res.writeHead(200, {'Content-type': mimeTypes.html});
+                            res.writeHead(400, {'Content-type': mimeTypes.html});
                             res.end('User not Found');
                         }else{
 
@@ -272,8 +277,8 @@ try{
 
                     });
                 }else{
-                    res.writeHead(400, {'Content-type': mimeTypes.text});
-                    res.end('Invalid data entered. Field Missing.');
+                    res.writeHead(403, {'Content-type': mimeTypes.text});
+                    res.end('Password field Missing or does not satisfy criteria.');
                 }
 
             });
@@ -299,7 +304,7 @@ try{
 
 
                 }else{
-                    res.writeHead(200, {'Content-type': mimeTypes.text});
+                    res.writeHead(403, {'Content-type': mimeTypes.text});
                     res.end('Please provide correct token in header.');
                 }                
             }else{
@@ -340,7 +345,7 @@ try{
                         });
 
                     }else{
-                        res.writeHead(200, {'Content-type': mimeTypes.text});
+                        res.writeHead(403, {'Content-type': mimeTypes.text});
                         res.end('Please provide correct token in header.');                    
                     }                   
 
@@ -426,7 +431,7 @@ try{
 
 
                 }else{
-                    res.writeHead(400, {'Content-type': mimeTypes.text});
+                    res.writeHead(403, {'Content-type': mimeTypes.text});
                     res.end('Please provide correct token in header.');
                 }
                 
@@ -470,7 +475,7 @@ try{
 
 
                     }else{
-                        res.writeHead(400, {'Content-type': mimeTypes.text});
+                        res.writeHead(403, {'Content-type': mimeTypes.text});
                         res.end('Please provide correct token in header.');                    
                     }                   
 
@@ -482,7 +487,7 @@ try{
                 
             });            
 
-        }else if(req.method == 'POST' && pathname == '/api/logout'){
+        }else if(req.method == 'GET' && pathname == '/api/logout'){
 
                 if(localUser != undefined){
 
@@ -496,7 +501,7 @@ try{
 
 
                     }else{
-                        res.writeHead(400, {'Content-type': mimeTypes.text});
+                        res.writeHead(403, {'Content-type': mimeTypes.text});
                         res.end('Please provide correct token in header.');                    
                     }                   
 
