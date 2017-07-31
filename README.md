@@ -6,7 +6,14 @@ RestfulAPI for adding/deleting/editing items in Cart
 
 > Using Docker Image
 
-* build docker image and deploy
+* Build docker image and deploy
+
+* Give persmissions to the scripts.
+
+```
+$ sudo chmod +x [scriptname]
+```
+
 * Ubuntu 14
 
 ```
@@ -58,8 +65,10 @@ $ python herokutests.py
 | `/logout` |   |   |   | GET | Logout user | Succesfully logged out. |
 
 
-> here is [link to postman local][] for more details.
-> here is [link to postman heroku][] for more details.
+> Here is [link to postman local][] for more details.
+
+
+> Here is [link to postman heroku][] for more details.
 
 
 
