@@ -55,9 +55,9 @@ $ python herokutests.py
 
 | paths | header| params | body| methods | description  | response
 |---|---|---|---|---|---|---|
-| `/signup` | | | username, password, confirmpassword as JSON | POST | sign up | 'User Added. Please visit /api/authenticate to get the web token.' |
-| `/authenticate`| | | username, password JSON | POST | authenticate user | Generated Token |
-| `/login`  | | | username, password JSON | POST | login user | You are logged in. Please provide apitoken for next routes. |
+| `/api/signup` | | | username, password, confirmpassword as JSON | POST | sign up | 'User Added. Please visit /api/authenticate to get the web token.' |
+| `/api/authenticate`| | | username, password JSON | POST | authenticate user | Generated Token |
+| `/api/login`  | | | username, password JSON | POST | login user | You are logged in. Please provide apitoken for next routes. |
 | `/api/product` | token |  limit, category | | GET | Get products | JSON data |
 | `/api/product` | token |  | JSON data | POST | Add products | Product Added to database. |
 | `/api/product` | token | id| JSON data | PUT | Add products | Product Updated. |
